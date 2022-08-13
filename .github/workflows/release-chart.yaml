@@ -1,6 +1,7 @@
 name: Release Chart
 
 on:
+  workflow_dispatch:
   push:
     tags: "chart-*"
 
@@ -11,10 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Fetch history
-        run: git fetch --prune --unshallow
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Configure Git
         run: |
@@ -30,3 +30,4 @@ jobs:
         uses: helm/chart-releaser-action@v1.4.0
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          CR_RELEASE_NAME_TEMPLATE: "chart-{{ .Version }}"
