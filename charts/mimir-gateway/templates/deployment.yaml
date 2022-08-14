@@ -64,6 +64,9 @@ spec:
           {{- with .Values.args.jwksRefreshInterval }}
           - --gateway.auth.jwks-refresh-interval={{ . }}
           {{- end }}
+          {{- with .Values.args.logLevel }}
+          - --log.level={{ . }}
+          {{- end }}
           ports:
             - name: http
               containerPort: 80
