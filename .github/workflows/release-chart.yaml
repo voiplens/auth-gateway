@@ -3,7 +3,10 @@ name: Release Chart
 on:
   workflow_dispatch:
   push:
-    tags: "chart-*"
+    branches:
+      - main
+    paths:
+      - "charts/**"
 
 jobs:
   release:
