@@ -1,8 +1,10 @@
-package gateway
+package app
 
 import (
 	"net/http"
 
+	"github.com/celest-io/mimir-gateway/pkg/auth"
+	"github.com/celest-io/mimir-gateway/pkg/proxy"
 	"github.com/cortexproject/cortex/pkg/util/log"
 	klog "github.com/go-kit/log"
 	"github.com/go-kit/log/level"
@@ -12,35 +14,37 @@ import (
 // Gateway hosts a reverse proxy for each upstream cortex service we'd like to tunnel after successful authentication
 type Gateway struct {
 	cfg                Config
-	distributorProxy   *Proxy
-	queryFrontendProxy *Proxy
-	rulerProxy         *Proxy
-	alertManagerProxy  *Proxy
+	authCfg            auth.Config
+	distributorProxy   *proxy.Proxy
+	queryFrontendProxy *proxy.Proxy
+	rulerProxy         *proxy.Proxy
+	alertManagerProxy  *proxy.Proxy
 	server             *server.Server
 }
 
 // New instantiates a new Gateway
-func New(cfg Config, svr *server.Server) (*Gateway, error) {
+func New(cfg Config, authCfg auth.Config, svr *server.Server) (*Gateway, error) {
 	// Initialize reverse proxy for each upstream target service
-	distributor, err := newProxy(cfg.DistributorAddress, "distributor")
+	distributor, err := proxy.NewProxy(cfg.DistributorAddress, "distributor")
 	if err != nil {
 		return nil, err
 	}
-	queryFrontend, err := newProxy(cfg.QueryFrontendAddress, "query-frontend")
+	queryFrontend, err := proxy.NewProxy(cfg.QueryFrontendAddress, "query-frontend")
 	if err != nil {
 		return nil, err
 	}
-	ruler, err := newProxy(cfg.RulerAddress, "ruler")
+	ruler, err := proxy.NewProxy(cfg.RulerAddress, "ruler")
 	if err != nil {
 		return nil, err
 	}
-	alertManager, err := newProxy(cfg.AlertManagerAddress, "ruler")
+	alertManager, err := proxy.NewProxy(cfg.AlertManagerAddress, "ruler")
 	if err != nil {
 		return nil, err
 	}
 
 	return &Gateway{
 		cfg:                cfg,
+		authCfg:            authCfg,
 		distributorProxy:   distributor,
 		queryFrontendProxy: queryFrontend,
 		rulerProxy:         ruler,
@@ -56,7 +60,7 @@ func (g *Gateway) Start() {
 
 // RegisterRoutes binds all to be piped routes to their handlers
 func (g *Gateway) registerRoutes() {
-	authenticateTenant := newAuthenticationMiddleware(g.cfg)
+	authenticateTenant := auth.NewAuthenticationMiddleware(g.authCfg)
 
 	g.server.HTTP.Path("/all_user_stats").HandlerFunc(g.distributorProxy.Handler)
 	g.server.HTTP.Path("/api/prom/push").Handler(authenticateTenant.Wrap(http.HandlerFunc(g.distributorProxy.Handler)))

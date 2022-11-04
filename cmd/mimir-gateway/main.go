@@ -4,7 +4,8 @@ import (
 	"flag"
 	"net/http"
 
-	"github.com/celest-io/mimir-gateway/gateway"
+	"github.com/celest-io/mimir-gateway/cmd/mimir-gateway/app"
+	"github.com/celest-io/mimir-gateway/pkg/auth"
 
 	"github.com/cortexproject/cortex/pkg/util/log"
 	"github.com/grafana/dskit/flagext"
@@ -33,10 +34,11 @@ func main() {
 				middleware.ServerUserHeaderInterceptor,
 			},
 		}
-		gatewayCfg gateway.Config
+		gatewayCfg app.Config
+		authCfg    auth.Config
 	)
 
-	flagext.RegisterFlags(&serverCfg, &gatewayCfg)
+	flagext.RegisterFlags(&serverCfg, &gatewayCfg, &authCfg)
 	flag.Parse()
 
 	log.InitLogger(&serverCfg)
@@ -44,6 +46,9 @@ func main() {
 	// Must be done after initializing the logger, otherwise no log message is printed
 	err := gatewayCfg.Validate()
 	log.CheckFatal("validating gateway config", err)
+
+	err = authCfg.Validate()
+	log.CheckFatal("validating authentication config", err)
 
 	// Setting the environment variable JAEGER_AGENT_HOST enables tracing
 	trace, err := tracing.NewFromEnv("cortex-gateway")
@@ -55,7 +60,7 @@ func main() {
 	defer svr.Shutdown()
 
 	// Setup proxy and register routes
-	gateway, err := gateway.New(gatewayCfg, svr)
+	gateway, err := app.New(gatewayCfg, authCfg, svr)
 	log.CheckFatal("initializing gateway", err)
 	gateway.Start()
 

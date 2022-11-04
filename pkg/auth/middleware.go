@@ -1,4 +1,4 @@
-package gateway
+package auth
 
 import (
 	"fmt"
@@ -30,7 +30,7 @@ var (
 )
 
 // AuthenticateTenant validates the Bearer Token and attaches the TenantID to the request
-func newAuthenticationMiddleware(cfg Config) middleware.Func {
+func NewAuthenticationMiddleware(cfg Config) middleware.Func {
 	if cfg.TenantName != "" {
 		return newStaticTenantNameMiddleware(cfg.TenantName)
 	}
