@@ -4,8 +4,8 @@ import (
 	"flag"
 	"net/http"
 
-	"github.com/celest-io/mimir-gateway/cmd/mimir-gateway/app"
-	"github.com/celest-io/mimir-gateway/pkg/auth"
+	"github.com/celest-io/auth-gateway/cmd/mimir-gateway/app"
+	"github.com/celest-io/auth-gateway/pkg/auth"
 
 	"github.com/cortexproject/cortex/pkg/util/log"
 	"github.com/grafana/dskit/flagext"

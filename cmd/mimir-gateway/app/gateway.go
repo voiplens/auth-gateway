@@ -3,8 +3,8 @@ package app
 import (
 	"net/http"
 
-	"github.com/celest-io/mimir-gateway/pkg/auth"
-	"github.com/celest-io/mimir-gateway/pkg/proxy"
+	"github.com/celest-io/auth-gateway/pkg/auth"
+	"github.com/celest-io/auth-gateway/pkg/proxy"
 
 	"github.com/cortexproject/cortex/pkg/util/log"
 	klog "github.com/go-kit/log"

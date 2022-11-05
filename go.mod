@@ -1,4 +1,4 @@
-module github.com/celest-io/mimir-gateway
+module github.com/celest-io/auth-gateway
 
 go 1.19
 
