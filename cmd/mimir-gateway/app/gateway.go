@@ -13,7 +13,6 @@ import (
 )
 
 type Gateway struct {
-	cfg                Config
 	authCfg            auth.Config
 	distributorProxy   *proxy.Proxy
 	queryFrontendProxy *proxy.Proxy
@@ -22,28 +21,27 @@ type Gateway struct {
 	server             *server.Server
 }
 
-// New instantiates a new Gateway
-func New(cfg Config, authCfg auth.Config, svr *server.Server) (*Gateway, error) {
+// NewGateway instantiates a new Gateway
+func NewGateway(gatewayCfg Config, authCfg auth.Config, svr *server.Server) (*Gateway, error) {
 	// Initialize reverse proxy for each upstream target service
-	distributor, err := proxy.NewProxy(cfg.DistributorAddress, "distributor")
+	distributor, err := proxy.NewProxy(gatewayCfg.DistributorAddress, "distributor")
 	if err != nil {
 		return nil, err
 	}
-	queryFrontend, err := proxy.NewProxy(cfg.QueryFrontendAddress, "query-frontend")
+	queryFrontend, err := proxy.NewProxy(gatewayCfg.QueryFrontendAddress, "query-frontend")
 	if err != nil {
 		return nil, err
 	}
-	ruler, err := proxy.NewProxy(cfg.RulerAddress, "ruler")
+	ruler, err := proxy.NewProxy(gatewayCfg.RulerAddress, "ruler")
 	if err != nil {
 		return nil, err
 	}
-	alertManager, err := proxy.NewProxy(cfg.AlertManagerAddress, "ruler")
+	alertManager, err := proxy.NewProxy(gatewayCfg.AlertManagerAddress, "ruler")
 	if err != nil {
 		return nil, err
 	}
 
 	return &Gateway{
-		cfg:                cfg,
 		authCfg:            authCfg,
 		distributorProxy:   distributor,
 		queryFrontendProxy: queryFrontend,

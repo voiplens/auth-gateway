@@ -60,7 +60,7 @@ func main() {
 	defer svr.Shutdown()
 
 	// Setup proxy and register routes
-	gateway, err := app.New(gatewayCfg, authCfg, svr)
+	gateway, err := app.NewGateway(gatewayCfg, authCfg, svr)
 	log.CheckFatal("initializing gateway", err)
 	gateway.Start()
 
