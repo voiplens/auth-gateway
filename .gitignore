@@ -20,3 +20,4 @@
 
 ./cortex-gateway
 ./mimir-gateway
+cmd/mimir-gateway/mimir-gateway

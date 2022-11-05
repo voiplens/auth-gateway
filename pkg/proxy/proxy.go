@@ -1,4 +1,4 @@
-package gateway
+package proxy
 
 import (
 	"net/http"
@@ -25,8 +25,8 @@ var (
 	}, []string{"targetname"})
 )
 
-// newProxy creates a new reverse proxy for a single upstream service
-func newProxy(target string, targetName string) (*Proxy, error) {
+// NewProxy creates a new reverse proxy for a single upstream service
+func NewProxy(target string, targetName string) (*Proxy, error) {
 	url, err := url.Parse(target)
 	if err != nil {
 		return nil, err
