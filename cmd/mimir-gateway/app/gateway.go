@@ -5,13 +5,13 @@ import (
 
 	"github.com/celest-io/mimir-gateway/pkg/auth"
 	"github.com/celest-io/mimir-gateway/pkg/proxy"
+
 	"github.com/cortexproject/cortex/pkg/util/log"
 	klog "github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/weaveworks/common/server"
 )
 
-// Gateway hosts a reverse proxy for each upstream cortex service we'd like to tunnel after successful authentication
 type Gateway struct {
 	cfg                Config
 	authCfg            auth.Config
@@ -89,13 +89,11 @@ func (g *Gateway) registerRoutes() {
 }
 
 func (g *Gateway) healthCheck(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(200)
-	w.Write([]byte("Ok"))
+	http.Error(w, "ok", http.StatusOK)
 }
 
 func (g *Gateway) notFoundHandler(w http.ResponseWriter, r *http.Request) {
 	logger := klog.With(log.WithContext(r.Context(), log.Logger), "ip_address", r.RemoteAddr)
 	level.Info(logger).Log("msg", "no request handler defined for this route", "route", r.RequestURI)
-	w.WriteHeader(404)
-	w.Write([]byte("404 - Resource not found"))
+	http.NotFound(w, r)
 }

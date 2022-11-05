@@ -64,5 +64,8 @@ func main() {
 	log.CheckFatal("initializing gateway", err)
 	gateway.Start()
 
-	svr.Run()
+	err = svr.Run()
+	if err != nil {
+		log.CheckFatal("Error running server gateway", err)
+	}
 }
