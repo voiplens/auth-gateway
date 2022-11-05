@@ -47,8 +47,13 @@ func (cfg *Config) Validate() error {
 	if !strings.HasPrefix(cfg.RulerAddress, "http") {
 		return fmt.Errorf("ruler address must start with a valid scheme (http/https). Given is '%v'", cfg.RulerAddress)
 	}
+
 	if cfg.AlertManagerAddress == "" {
 		return fmt.Errorf("you must set -gateway.alertmanager.address")
+	}
+
+	if !strings.HasPrefix(cfg.AlertManagerAddress, "http") {
+		return fmt.Errorf("The AlertManager address must start with a valid scheme (http/https). Given is '%v'", cfg.AlertManagerAddress)
 	}
 
 	return nil
