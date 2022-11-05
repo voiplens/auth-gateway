@@ -21,3 +21,4 @@
 ./cortex-gateway
 ./mimir-gateway
 cmd/mimir-gateway/mimir-gateway
+cmd/loki-gateway/loki-gateway

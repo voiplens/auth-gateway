@@ -15,14 +15,14 @@ GIT_REVISION := $(shell git rev-parse --short HEAD)
 GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 
 # Build flags
-VPREFIX := github.com/celest-io/mimir-gateway/pkg/util/build
+VPREFIX := github.com/celest-io/auth-gateway/pkg/util/build
 GO_LDFLAGS   := -X $(VPREFIX).Branch=$(GIT_BRANCH) -X $(VPREFIX).Version=$(IMAGE_TAG) -X $(VPREFIX).Revision=$(GIT_REVISION) -X $(VPREFIX).BuildUser=$(shell whoami)@$(shell hostname) -X $(VPREFIX).BuildDate=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 GO_FLAGS     := -ldflags "-extldflags \"-static\" -s -w $(GO_LDFLAGS)" -tags netgo
 
 ################
 # Main Targets #
 ################
-all: mimir-gateway
+all: mimir-gateway loki-gateway
 
 #################
 # mimir-gateway #
@@ -33,16 +33,27 @@ mimir-gateway: cmd/mimir-gateway/mimir-gateway
 cmd/mimir-gateway/mimir-gateway:
 	CGO_ENABLED=0 go build $(GO_FLAGS) -o $@ ./$(@D)
 
+#################
+# loki-gateway #
+#################
+.PHONY: loki-gateway
+loki-gateway: cmd/loki-gateway/loki-gateway
+
+cmd/loki-gateway/loki-gateway:
+	CGO_ENABLED=0 go build $(GO_FLAGS) -o $@ ./$(@D)
+
 
 ##########
 # Images #
 ##########
 
-images: mimir-gateway-image
+images: mimir-gateway-image loki-gateway-image
 
 mimir-gateway-image:
 	$(SUDO) docker build -t $(IMAGE_PREFIX)/mimir-gateway:$(IMAGE_TAG) -f cmd/mimir-gateway/Dockerfile .
 
+loki-gateway-image:
+	$(SUDO) docker build -t $(IMAGE_PREFIX)/loki-gateway:$(IMAGE_TAG) -f cmd/loki-gateway/Dockerfile .
 
 ########
 # Lint #
@@ -61,4 +72,5 @@ lint:
 
 clean:
 	rm -rf cmd/mimir-gateway/mimir-gateway
+	rm -rf cmd/loki-gateway/loki-gateway
 	go clean ./...
