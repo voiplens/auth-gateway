@@ -10,16 +10,16 @@ import (
 type Config struct {
 	DistributorAddress   string
 	QueryFrontendAddress string
+	QuerierAddress       string
 	RulerAddress         string
-	AlertManagerAddress  string
 }
 
 // RegisterFlags adds the flags required to config this package's Config struct
 func (cfg *Config) RegisterFlags(f *flag.FlagSet) {
-	f.StringVar(&cfg.DistributorAddress, "gateway.distributor.address", "", "Upstream HTTP URL for Mimir Distributor")
-	f.StringVar(&cfg.QueryFrontendAddress, "gateway.query-frontend.address", "", "Upstream HTTP URL for Mimir Query Frontend")
-	f.StringVar(&cfg.RulerAddress, "gateway.ruler.address", "", "Upstream HTTP URL for Mimir Query Frontend")
-	f.StringVar(&cfg.AlertManagerAddress, "gateway.alertmanager.address", "", "Upstream HTTP URL for Mimir AlertManager")
+	f.StringVar(&cfg.DistributorAddress, "gateway.distributor.address", "", "Upstream HTTP URL for Loki Distributor")
+	f.StringVar(&cfg.QueryFrontendAddress, "gateway.query-frontend.address", "", "Upstream HTTP URL for Loki Query Frontend")
+	f.StringVar(&cfg.RulerAddress, "gateway.ruler.address", "", "Upstream HTTP URL for Loki Ruler")
+	f.StringVar(&cfg.QuerierAddress, "gateway.querier.address", "", "Upstream HTTP URL for Loki Querier")
 }
 
 // Validate given config parameters. Returns nil if everything is fine
@@ -48,12 +48,12 @@ func (cfg *Config) Validate() error {
 		return fmt.Errorf("ruler address must start with a valid scheme (http/https). Given is '%v'", cfg.RulerAddress)
 	}
 
-	if cfg.AlertManagerAddress == "" {
-		return fmt.Errorf("you must set -gateway.alertmanager.address")
+	if cfg.QuerierAddress == "" {
+		return fmt.Errorf("you must set -gateway.querier.address")
 	}
 
-	if !strings.HasPrefix(cfg.AlertManagerAddress, "http") {
-		return fmt.Errorf("The AlertManager address must start with a valid scheme (http/https). Given is '%v'", cfg.AlertManagerAddress)
+	if !strings.HasPrefix(cfg.QuerierAddress, "http") {
+		return fmt.Errorf("querier address must start with a valid scheme (http/https). Given is '%v'", cfg.QuerierAddress)
 	}
 
 	return nil

@@ -1,0 +1,45 @@
+---
+multitenancy_enabled: true
+
+# Run Mimir in single process mode, with all components running in 1 process.
+target: all,alertmanager,overrides-exporter
+
+# Configure Mimir to use Minio as object storage backend.
+common:
+  storage:
+    backend: s3
+    s3:
+      endpoint: minio:9000
+      access_key_id: admin
+      secret_access_key: supersecret
+      insecure: true
+      bucket_name: mimir
+
+# Blocks storage requires a prefix when using a common object storage bucket.
+blocks_storage:
+  storage_prefix: blocks
+  tsdb:
+    dir: /data/ingester
+
+ruler:
+  rule_path: /data/ruler
+  alertmanager_url: http://127.0.0.1:8080/alertmanager
+  ring:
+    # Quickly detect unhealthy rulers to speed up the tutorial.
+    heartbeat_period: 2s
+    heartbeat_timeout: 10s
+
+alertmanager:
+  data_dir: /data/alertmanager
+  fallback_config_file: /etc/alertmanager-fallback-config.yaml
+  external_url: http://localhost:9009/alertmanager
+
+ingester:
+  # Lifecycler is responsible for managing the lifecycle of entries in the ring.
+  # For a complete list of config options check the lifecycler section under the ingester config at the following link -
+  # https://cortexmetrics.io/docs/configuration/configuration-file/#ingester_config
+  ring:
+    # number of replicas of each span to make while pushing to the backend
+    replication_factor: 1
+server:
+  log_level: debug

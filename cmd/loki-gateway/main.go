@@ -4,7 +4,7 @@ import (
 	"flag"
 	"net/http"
 
-	"github.com/celest-io/auth-gateway/cmd/mimir-gateway/app"
+	"github.com/celest-io/auth-gateway/cmd/loki-gateway/app"
 	"github.com/celest-io/auth-gateway/pkg/auth"
 	_ "github.com/celest-io/auth-gateway/pkg/util/build"
 
@@ -27,7 +27,7 @@ func main() {
 
 	var (
 		serverCfg = server.Config{
-			MetricsNamespace: "mimir_auth_gateway",
+			MetricsNamespace: "loki_auth_gateway",
 			HTTPMiddleware: []middleware.Interface{
 				middleware.Func(func(handler http.Handler) http.Handler {
 					return nethttp.Middleware(opentracing.GlobalTracer(), handler, operationNameFunc)
@@ -67,7 +67,7 @@ func main() {
 	log.CheckFatal("initializing gateway", err)
 	gateway.Start()
 
-	level.Info(log.Logger).Log("msg", "Starting Mimir Auth Gateway", "version", version.Info())
+	level.Info(log.Logger).Log("msg", "Starting Loki Auth Gateway", "version", version.Info())
 	err = svr.Run()
 	log.CheckFatal("Error running server gateway", err)
 }

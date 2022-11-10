@@ -12,12 +12,13 @@ import (
 	"github.com/weaveworks/common/server"
 )
 
+// Gateway hosts a reverse proxy for each upstream cortex service we'd like to tunnel after successful authentication
 type Gateway struct {
 	authCfg            auth.Config
 	distributorProxy   *proxy.Proxy
 	queryFrontendProxy *proxy.Proxy
 	rulerProxy         *proxy.Proxy
-	alertManagerProxy  *proxy.Proxy
+	querierProxy       *proxy.Proxy
 	server             *server.Server
 }
 
@@ -36,7 +37,7 @@ func NewGateway(gatewayCfg Config, authCfg auth.Config, svr *server.Server) (*Ga
 	if err != nil {
 		return nil, err
 	}
-	alertManager, err := proxy.NewProxy(gatewayCfg.AlertManagerAddress, "ruler")
+	querier, err := proxy.NewProxy(gatewayCfg.QuerierAddress, "querier")
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +47,7 @@ func NewGateway(gatewayCfg Config, authCfg auth.Config, svr *server.Server) (*Ga
 		distributorProxy:   distributor,
 		queryFrontendProxy: queryFrontend,
 		rulerProxy:         ruler,
-		alertManagerProxy:  alertManager,
+		querierProxy:       querier,
 		server:             svr,
 	}, nil
 }
@@ -61,27 +62,19 @@ func (g *Gateway) registerRoutes() {
 	authenticateTenant := auth.NewAuthenticationMiddleware(g.authCfg)
 
 	g.server.HTTP.Path("/all_user_stats").HandlerFunc(g.distributorProxy.Handler)
+	g.server.HTTP.Path("/loki/api/v1/push").Handler(authenticateTenant.Wrap(http.HandlerFunc(g.distributorProxy.Handler)))
 	g.server.HTTP.Path("/api/prom/push").Handler(authenticateTenant.Wrap(http.HandlerFunc(g.distributorProxy.Handler)))
-	g.server.HTTP.Path("/api/v1/push").Handler(authenticateTenant.Wrap(http.HandlerFunc(g.distributorProxy.Handler)))
+
+	g.server.HTTP.Path("/loki/api/v1/tail").Handler(authenticateTenant.Wrap(http.HandlerFunc(g.querierProxy.Handler)))
+	g.server.HTTP.Path("/api/prom/tail").Handler(authenticateTenant.Wrap(http.HandlerFunc(g.querierProxy.Handler)))
 
 	g.server.HTTP.PathPrefix("/prometheus/api/v1/alerts").Handler(authenticateTenant.Wrap(http.HandlerFunc(g.rulerProxy.Handler)))
 	g.server.HTTP.PathPrefix("/prometheus/api/v1/rules").Handler(authenticateTenant.Wrap(http.HandlerFunc(g.rulerProxy.Handler)))
-	g.server.HTTP.PathPrefix("/prometheus/config/v1/rules").Handler(authenticateTenant.Wrap(http.HandlerFunc(g.rulerProxy.Handler)))
-	g.server.HTTP.PathPrefix("/api/prom/api/v1/alerts").Handler(authenticateTenant.Wrap(http.HandlerFunc(g.rulerProxy.Handler)))
-	g.server.HTTP.PathPrefix("/api/prom/api/v1/rules").Handler(authenticateTenant.Wrap(http.HandlerFunc(g.rulerProxy.Handler)))
-	g.server.HTTP.PathPrefix("/api/v1/rules").Handler(authenticateTenant.Wrap(http.HandlerFunc(g.rulerProxy.Handler)))
 	g.server.HTTP.PathPrefix("/api/prom/rules").Handler(authenticateTenant.Wrap(http.HandlerFunc(g.rulerProxy.Handler)))
+	g.server.HTTP.PathPrefix("/api/prom/alerts").Handler(authenticateTenant.Wrap(http.HandlerFunc(g.rulerProxy.Handler)))
 
-	g.server.HTTP.PathPrefix("/prometheus/api").Handler(authenticateTenant.Wrap(http.HandlerFunc(g.queryFrontendProxy.Handler)))
-	g.server.HTTP.PathPrefix("/api/v1/user_stats").Handler(authenticateTenant.Wrap(http.HandlerFunc(g.queryFrontendProxy.Handler)))
-
-	g.server.HTTP.PathPrefix("/api/v1/alerts").Handler(authenticateTenant.Wrap(http.HandlerFunc(g.alertManagerProxy.Handler)))
-	g.server.HTTP.PathPrefix("/alertmanager").Handler(authenticateTenant.Wrap(http.HandlerFunc(g.alertManagerProxy.Handler)))
-	g.server.HTTP.PathPrefix("/multitenant_alertmanager/status").Handler(authenticateTenant.Wrap(http.HandlerFunc(g.alertManagerProxy.Handler)))
-	g.server.HTTP.PathPrefix("/api/v1/alerts").Handler(authenticateTenant.Wrap(http.HandlerFunc(g.alertManagerProxy.Handler)))
-	g.server.HTTP.PathPrefix("/api/prom/alertmanager").Handler(authenticateTenant.Wrap(http.HandlerFunc(g.alertManagerProxy.Handler)))
-
-	g.server.HTTP.PathPrefix("/api").Handler(authenticateTenant.Wrap(http.HandlerFunc(g.queryFrontendProxy.Handler)))
+	g.server.HTTP.PathPrefix("/loki/api/").Handler(authenticateTenant.Wrap(http.HandlerFunc(g.queryFrontendProxy.Handler)))
+	g.server.HTTP.PathPrefix("/api/prom/").Handler(authenticateTenant.Wrap(http.HandlerFunc(g.queryFrontendProxy.Handler)))
 	g.server.HTTP.Path("/health").HandlerFunc(g.healthCheck)
 	g.server.HTTP.PathPrefix("/").HandlerFunc(g.notFoundHandler)
 }
