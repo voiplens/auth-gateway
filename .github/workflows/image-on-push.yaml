@@ -15,15 +15,16 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    permissions:
-      packages: write
-      contents: read
     strategy:
       matrix:
         image:
           - mimir-gateway
           - loki-gateway
+
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
 
     steps:
       - name: Checkout repo
@@ -39,7 +40,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_ORG }}/${{ matix.image }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_ORG }}/${{ matrix.image }}
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
