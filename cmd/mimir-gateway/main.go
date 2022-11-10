@@ -6,11 +6,14 @@ import (
 
 	"github.com/celest-io/auth-gateway/cmd/mimir-gateway/app"
 	"github.com/celest-io/auth-gateway/pkg/auth"
+	_ "github.com/celest-io/auth-gateway/pkg/util/build"
 
 	"github.com/cortexproject/cortex/pkg/util/log"
+	"github.com/go-kit/log/level"
 	"github.com/grafana/dskit/flagext"
 	"github.com/opentracing-contrib/go-stdlib/nethttp"
 	"github.com/opentracing/opentracing-go"
+	"github.com/prometheus/common/version"
 	"github.com/weaveworks/common/middleware"
 	"github.com/weaveworks/common/server"
 	"github.com/weaveworks/common/tracing"
@@ -24,7 +27,7 @@ func main() {
 
 	var (
 		serverCfg = server.Config{
-			MetricsNamespace: "cortex_gateway",
+			MetricsNamespace: "mimir_auth_gateway",
 			HTTPMiddleware: []middleware.Interface{
 				middleware.Func(func(handler http.Handler) http.Handler {
 					return nethttp.Middleware(opentracing.GlobalTracer(), handler, operationNameFunc)
@@ -51,7 +54,7 @@ func main() {
 	log.CheckFatal("validating authentication config", err)
 
 	// Setting the environment variable JAEGER_AGENT_HOST enables tracing
-	trace, err := tracing.NewFromEnv("cortex-gateway")
+	trace, err := tracing.NewFromEnv("auth-gateway")
 	log.CheckFatal("initializing tracing", err)
 	defer trace.Close()
 
@@ -64,8 +67,7 @@ func main() {
 	log.CheckFatal("initializing gateway", err)
 	gateway.Start()
 
+	level.Info(log.Logger).Log("msg", "Starting Mimir Auth Gateway", "version", version.Info())
 	err = svr.Run()
-	if err != nil {
-		log.CheckFatal("Error running server gateway", err)
-	}
+	log.CheckFatal("Error running server gateway", err)
 }
