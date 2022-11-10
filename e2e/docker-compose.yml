@@ -1,10 +1,8 @@
-version: "3.1"
+version: "3.8"
 
 services:
   agent:
-    image: grafana/agent:v0.23.0
-    volumes:
-      - ./agent:/etc/agent-config
+    image: grafana/agent:latest
     entrypoint:
       - /bin/agent
       - -config.file=/etc/agent-config/config.yaml
@@ -15,38 +13,92 @@ services:
       HOSTNAME: agent
       REMOTE_WRITE_HOST: host.docker.internal:8900
       OAUTH_CLIENT_ID: $AGENT_CLIENT_ID
-      OAUTH_CLIENT_SECRET: $OAUTH_CLIENT_SECRET
+      OAUTH_CLIENT_SECRET: $AGENT_CLIENT_SECRET
       OAUTH_TOKEN_URL: $OAUTH_TOKEN_URL
       OAUTH_AUDIENCE: $OAUTH_AUDIENCE
       BEARER_TOKEN: $BEARER_TOKEN
-    ports:
-      - "12345:12345"
-
-  cortex:
-    image: cortexproject/cortex:v1.11.1
     volumes:
-      - ./cortex:/etc/cortex-config
-      - cortex:/data
-    entrypoint:
-      - /bin/cortex
-      - -config.file=/etc/cortex-config/config.yaml
+      - ./config/agent.yaml:/etc/agent-config/config.yaml
+
+  promtail:
+    image: grafana/promtail:latest
+    command:
+      - -config.file=/etc/promtail/config.yaml
+      - -config.expand-env
+    environment:
+      HOSTNAME: agent
+      REMOTE_WRITE_HOST: host.docker.internal:3100
+      OAUTH_CLIENT_ID: $AGENT_CLIENT_ID
+      OAUTH_CLIENT_SECRET: $AGENT_CLIENT_SECRET
+      OAUTH_TOKEN_URL: $OAUTH_TOKEN_URL
+      OAUTH_AUDIENCE: $OAUTH_AUDIENCE
+      BEARER_TOKEN: $BEARER_TOKEN
+    volumes:
+      - ./config/promtail.yaml:/etc/promtail/config.yaml:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  minio:
+    image: minio/minio
+    entrypoint: [""]
+    command:
+     - "sh"
+     - "-euc"
+     - |
+       mkdir -p /data/mimir && \
+       mkdir -p /data/loki-data && \
+       mkdir -p /data/loki-ruler && \
+       minio server --quiet /data
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=supersecret
+    volumes:
+      - minio-data:/data
+
+  mimir:
+    image: grafana/mimir:latest
+    command:
+      - -config.file=/etc/mimir.yaml
+    depends_on:
+      - minio
+    hostname: mimir
+    volumes:
+      - ./config/mimir.yaml:/etc/mimir.yaml
+      - ./config/alertmanager-fallback-config.yaml:/etc/alertmanager-fallback-config.yaml
+      - mimir-data:/data
     ports:
-      - "9009:9009"
+      - "9009:8080"
+
+  loki:
+    image: grafana/loki:latest
+    command:
+      - -config.file=/etc/loki.yaml
+    depends_on:
+      - minio
+    hostname: loki
+    volumes:
+      - ./config/loki.yaml:/etc/loki.yaml
+      - loki-data:/data
+    ports:
+      - "3101:3100"
 
   grafana:
-    image: grafana/grafana:8.4.5
+    image: grafana/grafana:latest
     volumes:
-      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./config/grafana-provisioning-datasources.yaml:/etc/grafana/provisioning/datasources/provisioning-datasources.yaml:ro
     user: "104"
     ports:
       - 3000:3000
     restart: always
     environment:
+      GF_LOG_LEVEL: "debug"
+      GF_APP_MODE: "development"
       GF_ANALYTICS_REPORTING_ENABLED: "false"
       GF_USERS_ALLOW_SIGN_UP: "false"
       GF_USERS_AUTO_ASSIGN_ORG_ROLE: "Viewer"
       GF_USERS_VIEWERS_CAN_EDIT: "false"
       GF_SMTP_ENABLED: "false"
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+      GF_AUTH_OAUTH_AUTO_LOGIN: "true"
       GF_AUTH_GENERIC_OAUTH_ENABLED: "true"
       GF_AUTH_GENERIC_OAUTH_ALLOW_SIGN_UP: "true"
       GF_AUTH_GENERIC_OAUTH_NAME: "Auth0"
@@ -60,4 +112,6 @@ services:
       GF_AUTH_GENERIC_OAUTH_API_URL: $OAUTH_API_URL
 
 volumes:
-  cortex:
+  minio-data:
+  mimir-data:
+  loki-data:
