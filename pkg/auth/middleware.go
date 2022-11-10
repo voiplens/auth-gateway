@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/celest-io/auth-gateway/pkg/util/log"
+
 	"github.com/MicahParks/keyfunc"
-	"github.com/cortexproject/cortex/pkg/util/log"
 	klog "github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	jwt "github.com/golang-jwt/jwt/v4"
@@ -30,7 +31,7 @@ var (
 )
 
 // AuthenticateTenant validates the Bearer Token and attaches the TenantID to the request
-func NewAuthenticationMiddleware(cfg Config) middleware.Func {
+func NewAuthenticationMiddleware(cfg Config, logger klog.Logger) middleware.Func {
 	if cfg.TenantName != "" {
 		return newStaticTenantNameMiddleware(cfg.TenantName)
 	}
@@ -41,13 +42,13 @@ func NewAuthenticationMiddleware(cfg Config) middleware.Func {
 	}
 	headers := append(extraHeaders, "Authorization")
 	authorizationHeaderExtractor := buildHeaderExtractor(extraHeaders)
-	jwks := newJWKS(cfg)
+	jwks := newJWKS(cfg, logger)
 
 	return middleware.Func(func(next http.Handler) http.Handler {
 
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-			logger := klog.With(log.WithContext(r.Context(), log.Logger), "ip_address", r.RemoteAddr)
+			logger := klog.With(log.WithContext(r.Context(), logger), "ip_address", r.RemoteAddr)
 			level.Debug(logger).Log("msg", "authenticating request", "route", r.RequestURI)
 
 			if !requestContainsToken(r, headers) {

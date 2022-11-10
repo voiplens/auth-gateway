@@ -5,8 +5,8 @@ import (
 
 	"github.com/celest-io/auth-gateway/pkg/auth"
 	"github.com/celest-io/auth-gateway/pkg/proxy"
+	"github.com/celest-io/auth-gateway/pkg/util/log"
 
-	"github.com/cortexproject/cortex/pkg/util/log"
 	klog "github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/weaveworks/common/server"
@@ -20,10 +20,11 @@ type Gateway struct {
 	rulerProxy         *proxy.Proxy
 	querierProxy       *proxy.Proxy
 	server             *server.Server
+	logger             klog.Logger
 }
 
 // NewGateway instantiates a new Gateway
-func NewGateway(gatewayCfg Config, authCfg auth.Config, svr *server.Server) (*Gateway, error) {
+func NewGateway(gatewayCfg Config, authCfg auth.Config, svr *server.Server, logger klog.Logger) (*Gateway, error) {
 	// Initialize reverse proxy for each upstream target service
 	distributor, err := proxy.NewProxy(gatewayCfg.DistributorAddress, "distributor")
 	if err != nil {
@@ -49,6 +50,7 @@ func NewGateway(gatewayCfg Config, authCfg auth.Config, svr *server.Server) (*Ga
 		rulerProxy:         ruler,
 		querierProxy:       querier,
 		server:             svr,
+		logger:             logger,
 	}, nil
 }
 
@@ -59,7 +61,7 @@ func (g *Gateway) Start() {
 
 // RegisterRoutes binds all to be piped routes to their handlers
 func (g *Gateway) registerRoutes() {
-	authenticateTenant := auth.NewAuthenticationMiddleware(g.authCfg)
+	authenticateTenant := auth.NewAuthenticationMiddleware(g.authCfg, g.logger)
 
 	g.server.HTTP.Path("/all_user_stats").HandlerFunc(g.distributorProxy.Handler)
 	g.server.HTTP.Path("/loki/api/v1/push").Handler(authenticateTenant.Wrap(http.HandlerFunc(g.distributorProxy.Handler)))
@@ -84,7 +86,7 @@ func (g *Gateway) healthCheck(w http.ResponseWriter, r *http.Request) {
 }
 
 func (g *Gateway) notFoundHandler(w http.ResponseWriter, r *http.Request) {
-	logger := klog.With(log.WithContext(r.Context(), log.Logger), "ip_address", r.RemoteAddr)
+	logger := klog.With(log.WithContext(r.Context(), g.logger), "ip_address", r.RemoteAddr)
 	level.Info(logger).Log("msg", "no request handler defined for this route", "route", r.RequestURI)
 	http.NotFound(w, r)
 }

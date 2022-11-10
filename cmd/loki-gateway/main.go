@@ -7,8 +7,8 @@ import (
 	"github.com/celest-io/auth-gateway/cmd/loki-gateway/app"
 	"github.com/celest-io/auth-gateway/pkg/auth"
 	_ "github.com/celest-io/auth-gateway/pkg/util/build"
+	"github.com/celest-io/auth-gateway/pkg/util/log"
 
-	"github.com/cortexproject/cortex/pkg/util/log"
 	"github.com/go-kit/log/level"
 	"github.com/grafana/dskit/flagext"
 	"github.com/opentracing-contrib/go-stdlib/nethttp"
@@ -44,30 +44,30 @@ func main() {
 	flagext.RegisterFlags(&serverCfg, &gatewayCfg, &authCfg)
 	flag.Parse()
 
-	log.InitLogger(&serverCfg)
+	logger := log.InitLogger(&serverCfg)
 
 	// Must be done after initializing the logger, otherwise no log message is printed
 	err := gatewayCfg.Validate()
-	log.CheckFatal("validating gateway config", err)
+	log.CheckFatal("validating gateway config", err, logger)
 
 	err = authCfg.Validate()
-	log.CheckFatal("validating authentication config", err)
+	log.CheckFatal("validating authentication config", err, logger)
 
 	// Setting the environment variable JAEGER_AGENT_HOST enables tracing
 	trace, err := tracing.NewFromEnv("auth-gateway")
-	log.CheckFatal("initializing tracing", err)
+	log.CheckFatal("initializing tracing", err, logger)
 	defer trace.Close()
 
 	svr, err := server.New(serverCfg)
-	log.CheckFatal("initializing server", err)
+	log.CheckFatal("initializing server", err, logger)
 	defer svr.Shutdown()
 
 	// Setup proxy and register routes
-	gateway, err := app.NewGateway(gatewayCfg, authCfg, svr)
-	log.CheckFatal("initializing gateway", err)
+	gateway, err := app.NewGateway(gatewayCfg, authCfg, svr, logger)
+	log.CheckFatal("initializing gateway", err, logger)
 	gateway.Start()
 
-	level.Info(log.Logger).Log("msg", "Starting Loki Auth Gateway", "version", version.Info())
+	level.Info(logger).Log("msg", "Starting Loki Auth Gateway", "version", version.Info())
 	err = svr.Run()
-	log.CheckFatal("Error running server gateway", err)
+	log.CheckFatal("Error running server gateway", err, logger)
 }
