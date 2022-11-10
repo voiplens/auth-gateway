@@ -4,16 +4,14 @@ import (
 	"time"
 
 	"github.com/MicahParks/keyfunc"
-	"github.com/cortexproject/cortex/pkg/util/log"
 	klog "github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 )
 
-func newJWKS(cfg Config) *keyfunc.JWKS {
+func newJWKS(cfg Config, logger klog.Logger) *keyfunc.JWKS {
 	if cfg.JwksURL == "" {
 		return keyfunc.NewGiven(map[string]keyfunc.GivenKey{})
 	}
-	logger := klog.With(log.Logger)
 	options := keyfunc.Options{}
 	if cfg.JwksRefreshEnabled {
 		level.Debug(logger).Log("msg", "JWKS background refresh enabled", "URL", cfg.JwksURL, "interval", cfg.JwksRefreshInterval, "timeout", cfg.JwksRefreshTimeout)
