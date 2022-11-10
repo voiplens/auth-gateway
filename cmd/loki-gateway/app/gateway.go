@@ -17,12 +17,12 @@ type Gateway struct {
 	authCfg            auth.Config
 	distributorProxy   *proxy.Proxy
 	queryFrontendProxy *proxy.Proxy
-	querierProxy       *proxy.Proxy
 	rulerProxy         *proxy.Proxy
+	querierProxy       *proxy.Proxy
 	server             *server.Server
 }
 
-// New instantiates a new Gateway
+// NewGateway instantiates a new Gateway
 func NewGateway(gatewayCfg Config, authCfg auth.Config, svr *server.Server) (*Gateway, error) {
 	// Initialize reverse proxy for each upstream target service
 	distributor, err := proxy.NewProxy(gatewayCfg.DistributorAddress, "distributor")
@@ -33,11 +33,11 @@ func NewGateway(gatewayCfg Config, authCfg auth.Config, svr *server.Server) (*Ga
 	if err != nil {
 		return nil, err
 	}
-	querier, err := proxy.NewProxy(gatewayCfg.QuerierAddress, "querier")
+	ruler, err := proxy.NewProxy(gatewayCfg.RulerAddress, "ruler")
 	if err != nil {
 		return nil, err
 	}
-	ruler, err := proxy.NewProxy(gatewayCfg.RulerAddress, "ruler")
+	querier, err := proxy.NewProxy(gatewayCfg.QuerierAddress, "querier")
 	if err != nil {
 		return nil, err
 	}
@@ -46,8 +46,8 @@ func NewGateway(gatewayCfg Config, authCfg auth.Config, svr *server.Server) (*Ga
 		authCfg:            authCfg,
 		distributorProxy:   distributor,
 		queryFrontendProxy: queryFrontend,
-		querierProxy:       querier,
 		rulerProxy:         ruler,
+		querierProxy:       querier,
 		server:             svr,
 	}, nil
 }

@@ -51,7 +51,7 @@ func main() {
 	log.CheckFatal("validating gateway config", err)
 
 	err = authCfg.Validate()
-	log.CheckFatal("validating gateway config", err)
+	log.CheckFatal("validating authentication config", err)
 
 	// Setting the environment variable JAEGER_AGENT_HOST enables tracing
 	trace, err := tracing.NewFromEnv("auth-gateway")
