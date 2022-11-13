@@ -65,4 +65,4 @@ jobs:
         env:
           COSIGN_EXPERIMENTAL: 1
         run: |
-          cosign sign ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.image }}:${{ github.run_id }}
+          cosign sign ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.image }}:${{ steps.meta.outputs.tags }}
