@@ -11,7 +11,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_ORG: celest-io
 
 jobs:
   build:
@@ -25,6 +24,7 @@ jobs:
     permissions:
       packages: write
       contents: read
+      id-token: write
 
     steps:
       - name: Checkout repo
@@ -40,12 +40,12 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_ORG }}/${{ matrix.image }}
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.image }}
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
         with:
-          registry: ghcr.io
+          registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -57,3 +57,12 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v2.8.1
+
+      - name: Sign the published Docker image
+        env:
+          COSIGN_EXPERIMENTAL: 1
+        run: |
+          cosign sign ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.image }}:${{ github.run_id }}

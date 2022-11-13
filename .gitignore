@@ -22,3 +22,10 @@
 ./mimir-gateway
 cmd/mimir-gateway/mimir-gateway
 cmd/loki-gateway/loki-gateway
+
+# helm chart dependecies
+charts/*/charts/
+charts/*/Chart.lock
+
+# release packages
+.cr-release-packages/

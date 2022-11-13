@@ -1,7 +1,7 @@
 apiVersion: v2
-name: mimir-gateway
+name: loki-gateway
 home: https://github.com/celest-io/auth-gateway
-description: A Helm chart for mimir-gateway
+description: A Helm chart for loki-gateway
 
 # A chart can be either an 'application' or a 'library' chart.
 #
