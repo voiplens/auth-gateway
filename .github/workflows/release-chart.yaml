@@ -66,8 +66,6 @@ jobs:
               break
             fi
             helm push "${pkg}" oci://${{ env.REGISTRY }}/${{ github.repository_owner }}/charts > .digest
-            file=${pkg##*/}       # extracts file name from full directory path
-            name=${file%-*}       # extracts chart name from filename
-            digest=$(awk -F "[, ]+" '/Digest/{print $NF}' < .digest)
-            cosign sign ${{ env.REGISTRY }}/${{ github.repository_owner }}/charts/"${name}"@"${digest}"
+            cat .digest
+            cosign sign $(cat .digest | awk -F "[, ]+" '/Pushed/{print $NF}')
           done
