@@ -1,4 +1,5 @@
 {
+  "bootstrap-sha": "281bb4a7d320e0d60cc936f4c0718b9452c9de18",
   "pull-request-title-pattern": "chore: release${component} ${version}",
   "changelog-path": "CHANGELOG.md",
   "bump-minor-pre-major": true,
