@@ -2,6 +2,7 @@
 auth_enabled: true
 server:
   http_listen_port: 3100
+  log_level: ${LOG_LEVEL:-info}
 memberlist:
   join_members:
     - loki:7946
