@@ -1,4 +1,7 @@
 ---
+server:
+  log_level: ${LOG_LEVEL:info}
+
 multitenancy_enabled: true
 
 # Run Mimir in single process mode, with all components running in 1 process.
@@ -41,5 +44,3 @@ ingester:
   ring:
     # number of replicas of each span to make while pushing to the backend
     replication_factor: 1
-server:
-  log_level: debug

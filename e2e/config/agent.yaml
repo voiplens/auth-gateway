@@ -1,6 +1,6 @@
 ---
 server:
-  log_level: debug
+  log_level: ${LOG_LEVEL:-info}
 
 metrics:
   scraping_service:
@@ -9,14 +9,14 @@ metrics:
     scrape_interval: 15s # By default, scrape targets every 15 seconds.
     scrape_timeout: 15s
     evaluation_interval: 15s
-    # remote_write:
-    #   - url: http://${REMOTE_WRITE_HOST:-host.docker.internal}/api/v1/push
-    #     oauth2:
-    #       client_id: ${OAUTH_CLIENT_ID}
-    #       client_secret: ${OAUTH_CLIENT_SECRET}
-    #       token_url: ${OAUTH_TOKEN_URL}
-    #       endpoint_params:
-    #         audience: ${OAUTH_AUDIENCE}
+    remote_write:
+      - url: http://${MIMIR_REMOTE_WRITE_HOST:-host.docker.internal}/api/v1/push
+        oauth2:
+          client_id: ${OAUTH_CLIENT_ID}
+          client_secret: ${OAUTH_CLIENT_SECRET}
+          token_url: ${OAUTH_TOKEN_URL}
+          endpoint_params:
+            audience: ${OAUTH_AUDIENCE}
     #   - url: http://${REMOTE_WRITE_HOST:-host.docker.internal}/api/v1/push
     #     bearer_token: ${BEARER_TOKEN}
     #     queue_config:
@@ -29,3 +29,26 @@ integrations:
 
   node_exporter:
     enabled: true
+
+logs:
+  configs:
+    - name: default
+      positions:
+        filename: /tmp/positions.yaml
+      clients:
+        - url: http://${LOKI_REMOTE_WRITE_HOST:-host.docker.internal}/loki/api/v1/push
+          oauth2:
+            client_id: ${OAUTH_CLIENT_ID}
+            client_secret: ${OAUTH_CLIENT_SECRET}
+            token_url: ${OAUTH_TOKEN_URL}
+            endpoint_params:
+              audience: ${OAUTH_AUDIENCE}
+      scrape_configs:
+        - job_name: flog_scrape
+          docker_sd_configs:
+            - host: unix:///var/run/docker.sock
+              refresh_interval: 5s
+          relabel_configs:
+            - source_labels: ["__meta_docker_container_name"]
+              regex: "/(.*)"
+              target_label: "container"
