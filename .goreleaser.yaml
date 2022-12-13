@@ -1,0 +1,117 @@
+project_name: auth-gateway
+
+builds:
+  - id: loki-gateway
+    main: ./cmd/loki-gateway
+    binary: loki-gateway
+    env:
+      - CGO_ENABLED=0
+      - VPREFIX=github.com/celest-io/auth-gateway/pkg/util/build
+    flags:
+      - -tags=netgo
+    ldflags:
+      - -extldflags "-static"
+      - -s
+      - -w
+      - -X {{ .Env.VPREFIX}}.Branch={{ .Branch }}
+      - -X {{ .Env.VPREFIX}}.Version={{ .Tag }}
+      - -X {{ .Env.VPREFIX}}.Revision={{ .ShortCommit }}
+      - -X {{ .Env.VPREFIX}}.BuildUser={{ .Env.USER}}
+      - -X {{ .Env.VPREFIX}}.BuildDate={{ .Timestamp }}
+    goos:
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm64
+      - arm
+    goarm:
+      - "6"
+      - "7"
+
+  - id: mimir-gateway
+    main: ./cmd/mimir-gateway
+    binary: mimir-gateway
+    env:
+      - CGO_ENABLED=0
+      - VPREFIX=github.com/celest-io/auth-gateway/pkg/util/build
+    flags:
+      - -tags=netgo
+    ldflags:
+      - -extldflags "-static"
+      - -s
+      - -w
+      - -X {{ .Env.VPREFIX}}.Branch={{ .Branch }}
+      - -X {{ .Env.VPREFIX}}.Version={{ .Tag }}
+      - -X {{ .Env.VPREFIX}}.Revision={{ .ShortCommit }}
+      - -X {{ .Env.VPREFIX}}.BuildUser={{ .Env.USER}}
+      - -X {{ .Env.VPREFIX}}.BuildDate={{ .Timestamp }}
+    goos:
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm64
+      - arm
+    goarm:
+      - "6"
+      - "7"
+
+archives:
+  - id: loki-gateway
+    builds:
+      - loki-gateway
+    name_template: "loki-gateway_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+    replacements:
+      darwin: Darwin
+      linux: Linux
+    format: tar.gz
+  - id: mimir-gateway
+    builds:
+      - mimir-gateway
+    name_template: "mimir-gateway_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+    replacements:
+      darwin: Darwin
+      linux: Linux
+    format: tar.gz
+
+release:
+  prerelease: "true"
+  extra_files:
+    - glob: config/release/*.yaml
+
+checksum:
+  name_template: "checksums.txt"
+  extra_files:
+    - glob: config/release/*.yaml
+
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+
+source:
+  enabled: true
+  name_template: "{{ .ProjectName }}_{{ .Version }}_source_code"
+
+sboms:
+  - id: source
+    artifacts: source
+    documents:
+      - "{{ .ProjectName }}_{{ .Version }}_sbom.spdx.json"
+
+signs:
+  - cmd: cosign
+    env:
+      - COSIGN_EXPERIMENTAL=1
+    certificate: "${artifact}.pem"
+    args:
+      - sign-blob
+      - "--output-certificate=${certificate}"
+      - "--output-signature=${signature}"
+      - "${artifact}"
+    artifacts: checksum
+    output: true
+
+changelog:
+  skip: true
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+# vim: set ts=2 sw=2 tw=0 fo=cnqoj

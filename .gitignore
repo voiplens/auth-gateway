@@ -22,6 +22,7 @@
 ./mimir-gateway
 cmd/mimir-gateway/mimir-gateway
 cmd/loki-gateway/loki-gateway
+dist/
 
 # helm chart dependecies
 charts/*/charts/
