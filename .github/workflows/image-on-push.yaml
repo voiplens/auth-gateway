@@ -6,6 +6,9 @@ on:
       - main
     tags:
       - v*
+    paths:
+      - "!charts/**"
+      - "!.github/**"
   release:
     types: [published]
 

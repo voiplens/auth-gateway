@@ -4,20 +4,22 @@
   "changelog-path": "CHANGELOG.md",
   "bump-minor-pre-major": true,
   "bump-patch-for-minor-pre-major": true,
+  "separate-pull-requests": true,
   "draft": false,
   "prerelease": false,
   "packages": {
     "charts/loki-gateway": {
-      "package-name": "loki-gateway-chart",
+      "component": "loki-gateway",
       "release-type": "helm"
     },
     "charts/mimir-gateway": {
-      "package-name": "mimir-gateway-chart",
+      "component": "mimir-gateway",
       "release-type": "helm"
     },
     ".": {
-      "package-name": "auth-gateway",
-      "release-type": "go"
+      "component": "auth-gateway",
+      "release-type": "go",
+      "include-component-in-tag": false
     }
   },
   "plugins": ["sentence-case"],
