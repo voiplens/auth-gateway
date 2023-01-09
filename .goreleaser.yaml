@@ -62,21 +62,15 @@ archives:
     builds:
       - loki-gateway
     name_template: "loki-gateway_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
-    replacements:
-      darwin: Darwin
-      linux: Linux
     format: tar.gz
   - id: mimir-gateway
     builds:
       - mimir-gateway
     name_template: "mimir-gateway_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
-    replacements:
-      darwin: Darwin
-      linux: Linux
     format: tar.gz
 
 release:
-  prerelease: "true"
+  prerelease: "false"
   extra_files:
     - glob: config/release/*.yaml
 
@@ -97,6 +91,50 @@ sboms:
     artifacts: source
     documents:
       - "{{ .ProjectName }}_{{ .Version }}_sbom.spdx.json"
+
+dockers:
+  - id: mimir-gateway
+    ids:
+      - mimir-gateway
+    dockerfile: cmd/mimir-gateway/Dockerfile.gorelease
+    image_templates:
+      - "ghcr.io/celest-io/mimir-gateway:latest"
+      - "ghcr.io/celest-io/mimir-gateway:{{ .Tag }}"
+      - "ghcr.io/celest-io/mimir-gateway:v{{ .Major }}"
+      - "ghcr.io/celest-io/mimir-gateway:v{{ .Major }}.{{ .Minor }}"
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title=mimir-gateway"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--platform=linux/arm64"
+  - id: loki-gateway
+    ids:
+      - loki-gateway
+    dockerfile: cmd/loki-gateway/Dockerfile.gorelease
+    image_templates:
+      - "ghcr.io/celest-io/loki-gateway:latest"
+      - "ghcr.io/celest-io/loki-gateway:{{ .Tag }}"
+      - "ghcr.io/celest-io/loki-gateway:v{{ .Major }}"
+      - "ghcr.io/celest-io/loki-gateway:v{{ .Major }}.{{ .Minor }}"
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title=loki-gateway"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--platform=linux/arm64"
+
+docker_signs:
+  - cmd: cosign
+    env:
+      - COSIGN_EXPERIMENTAL=1
+    artifacts: all
+    args:
+      - sign
+      - ${artifact}
+    output: true
 
 signs:
   - cmd: cosign
