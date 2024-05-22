@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.2](https://github.com/voiplens/auth-gateway/compare/v1.5.1...v1.5.2) (2024-05-22)
+
+
+### Bug Fixes
+
+* Downgrade dependencies to fix build process ([c8a51cd](https://github.com/voiplens/auth-gateway/commit/c8a51cd6ea9cddedd4f4d34b34611e58db14d21f))
+* Downgrade dependencies to fix build process ([#42](https://github.com/voiplens/auth-gateway/issues/42)) ([75e03a8](https://github.com/voiplens/auth-gateway/commit/75e03a8662b95d60e12dd87d8033858c9b890a73))
+
 ## [1.5.1](https://github.com/voiplens/auth-gateway/compare/v1.5.0...v1.5.1) (2024-05-22)
 
 
