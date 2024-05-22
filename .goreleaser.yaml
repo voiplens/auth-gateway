@@ -128,28 +128,26 @@ dockers:
 
 docker_signs:
   - cmd: cosign
-    env:
-      - COSIGN_EXPERIMENTAL=1
     artifacts: all
     args:
       - sign
       - ${artifact}
+      - "--yes"
     output: true
 
 signs:
   - cmd: cosign
-    env:
-      - COSIGN_EXPERIMENTAL=1
     certificate: "${artifact}.pem"
     args:
       - sign-blob
       - "--output-certificate=${certificate}"
       - "--output-signature=${signature}"
       - "${artifact}"
+      - "--yes"
     artifacts: checksum
     output: true
 
 changelog:
-  skip: true
+  disable: true
 # yaml-language-server: $schema=https://goreleaser.com/static/schema.json
 # vim: set ts=2 sw=2 tw=0 fo=cnqoj
