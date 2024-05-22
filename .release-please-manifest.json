@@ -1,5 +1,5 @@
 {
   "charts/loki-gateway": "1.5.1",
-  "charts/mimir-gateway": "1.5.1",
+  "charts/mimir-gateway": "1.5.2",
   ".": "1.5.3"
 }
