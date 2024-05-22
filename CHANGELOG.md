@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.3](https://github.com/voiplens/auth-gateway/compare/v1.5.2...v1.5.3) (2024-05-22)
+
+
+### Bug Fixes
+
+* Goreleaser signing step ([56d7977](https://github.com/voiplens/auth-gateway/commit/56d79771411aa9d0b4f9c473b9c995113e7cb834))
+
 ## [1.5.2](https://github.com/voiplens/auth-gateway/compare/v1.5.1...v1.5.2) (2024-05-22)
 
 
