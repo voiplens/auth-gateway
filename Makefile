@@ -6,7 +6,7 @@ GOTEST ?= go test
 # Variables #
 #############
 # Docker image info
-IMAGE_PREFIX ?= celest-io
+IMAGE_PREFIX ?= voiplens
 
 IMAGE_TAG := $(shell ./tools/image-tag)
 
@@ -15,7 +15,7 @@ GIT_REVISION := $(shell git rev-parse --short HEAD)
 GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 
 # Build flags
-VPREFIX := github.com/celest-io/auth-gateway/pkg/util/build
+VPREFIX := github.com/voiplens/auth-gateway/pkg/util/build
 GO_LDFLAGS   := -X $(VPREFIX).Branch=$(GIT_BRANCH) -X $(VPREFIX).Version=$(IMAGE_TAG) -X $(VPREFIX).Revision=$(GIT_REVISION) -X $(VPREFIX).BuildUser=$(shell whoami)@$(shell hostname) -X $(VPREFIX).BuildDate=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 GO_FLAGS     := -ldflags "-extldflags \"-static\" -s -w $(GO_LDFLAGS)" -tags netgo
 

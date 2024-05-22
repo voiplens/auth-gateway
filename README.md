@@ -1,8 +1,8 @@
 # Auth Gateway
 
-![License](https://img.shields.io/github/license/celest-io/auth-gateway.svg?color=blue)
-[![Go Report Card](https://goreportcard.com/badge/github.com/celest-io/auth-gateway)](https://goreportcard.com/report/github.com/celest-io/auth-gateway)
-![GitHub release](https://img.shields.io/github/v/release/celest-io/auth-gateway)
+![License](https://img.shields.io/github/license/voiplens/auth-gateway.svg?color=blue)
+[![Go Report Card](https://goreportcard.com/badge/github.com/voiplens/auth-gateway)](https://goreportcard.com/report/github.com/voiplens/auth-gateway)
+![GitHub release](https://img.shields.io/github/v/release/voiplens/auth-gateway)
 
 Auth Gateway is a microservice which strives to help you administrating and operating your [Mimir](https://github.com/grafana/mimir) & [Loki](https://github.com/grafana/loki) Cluster in multi tenant environments.
 

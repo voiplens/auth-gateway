@@ -11,7 +11,7 @@ A Helm chart for mimir-gateway
 Add Delivery Hero public chart repo:
 
 ```console
-helm repo add mimir-gateway https://celest-io.github.io/mimir-gateway
+helm repo add mimir-gateway https://voiplens.github.io/mimir-gateway
 ```
 
 A simple install with default values:

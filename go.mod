@@ -1,4 +1,4 @@
-module github.com/celest-io/auth-gateway
+module github.com/voiplens/auth-gateway
 
 go 1.19
 

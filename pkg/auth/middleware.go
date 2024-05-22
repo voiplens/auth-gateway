@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/celest-io/auth-gateway/pkg/util/log"
+	"github.com/voiplens/auth-gateway/pkg/util/log"
 
 	"github.com/MicahParks/keyfunc"
 	klog "github.com/go-kit/log"

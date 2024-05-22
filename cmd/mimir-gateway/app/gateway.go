@@ -3,9 +3,9 @@ package app
 import (
 	"net/http"
 
-	"github.com/celest-io/auth-gateway/pkg/auth"
-	"github.com/celest-io/auth-gateway/pkg/proxy"
-	"github.com/celest-io/auth-gateway/pkg/util/log"
+	"github.com/voiplens/auth-gateway/pkg/auth"
+	"github.com/voiplens/auth-gateway/pkg/proxy"
+	"github.com/voiplens/auth-gateway/pkg/util/log"
 
 	klog "github.com/go-kit/log"
 	"github.com/go-kit/log/level"

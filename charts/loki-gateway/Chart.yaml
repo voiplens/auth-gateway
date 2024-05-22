@@ -1,6 +1,6 @@
 apiVersion: v2
 name: loki-gateway
-home: https://github.com/celest-io/auth-gateway
+home: https://github.com/voiplens/auth-gateway
 description: A Helm chart for loki-gateway
 type: application
 version: 1.5.0

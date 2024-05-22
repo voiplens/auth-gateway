@@ -4,10 +4,10 @@ import (
 	"flag"
 	"net/http"
 
-	"github.com/celest-io/auth-gateway/cmd/loki-gateway/app"
-	"github.com/celest-io/auth-gateway/pkg/auth"
-	_ "github.com/celest-io/auth-gateway/pkg/util/build"
-	"github.com/celest-io/auth-gateway/pkg/util/log"
+	"github.com/voiplens/auth-gateway/cmd/loki-gateway/app"
+	"github.com/voiplens/auth-gateway/pkg/auth"
+	_ "github.com/voiplens/auth-gateway/pkg/util/build"
+	"github.com/voiplens/auth-gateway/pkg/util/log"
 
 	"github.com/go-kit/log/level"
 	"github.com/grafana/dskit/flagext"

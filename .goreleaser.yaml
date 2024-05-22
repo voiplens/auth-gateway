@@ -6,7 +6,7 @@ builds:
     binary: loki-gateway
     env:
       - CGO_ENABLED=0
-      - VPREFIX=github.com/celest-io/auth-gateway/pkg/util/build
+      - VPREFIX=github.com/voiplens/auth-gateway/pkg/util/build
     flags:
       - -tags=netgo
     ldflags:
@@ -34,7 +34,7 @@ builds:
     binary: mimir-gateway
     env:
       - CGO_ENABLED=0
-      - VPREFIX=github.com/celest-io/auth-gateway/pkg/util/build
+      - VPREFIX=github.com/voiplens/auth-gateway/pkg/util/build
     flags:
       - -tags=netgo
     ldflags:
@@ -98,10 +98,10 @@ dockers:
       - mimir-gateway
     dockerfile: cmd/mimir-gateway/Dockerfile.gorelease
     image_templates:
-      - "ghcr.io/celest-io/mimir-gateway:latest"
-      - "ghcr.io/celest-io/mimir-gateway:{{ .Tag }}"
-      - "ghcr.io/celest-io/mimir-gateway:v{{ .Major }}"
-      - "ghcr.io/celest-io/mimir-gateway:v{{ .Major }}.{{ .Minor }}"
+      - "ghcr.io/voiplens/mimir-gateway:latest"
+      - "ghcr.io/voiplens/mimir-gateway:{{ .Tag }}"
+      - "ghcr.io/voiplens/mimir-gateway:v{{ .Major }}"
+      - "ghcr.io/voiplens/mimir-gateway:v{{ .Major }}.{{ .Minor }}"
     build_flag_templates:
       - "--pull"
       - "--label=org.opencontainers.image.created={{.Date}}"
@@ -114,10 +114,10 @@ dockers:
       - loki-gateway
     dockerfile: cmd/loki-gateway/Dockerfile.gorelease
     image_templates:
-      - "ghcr.io/celest-io/loki-gateway:latest"
-      - "ghcr.io/celest-io/loki-gateway:{{ .Tag }}"
-      - "ghcr.io/celest-io/loki-gateway:v{{ .Major }}"
-      - "ghcr.io/celest-io/loki-gateway:v{{ .Major }}.{{ .Minor }}"
+      - "ghcr.io/voiplens/loki-gateway:latest"
+      - "ghcr.io/voiplens/loki-gateway:{{ .Tag }}"
+      - "ghcr.io/voiplens/loki-gateway:v{{ .Major }}"
+      - "ghcr.io/voiplens/loki-gateway:v{{ .Major }}.{{ .Minor }}"
     build_flag_templates:
       - "--pull"
       - "--label=org.opencontainers.image.created={{.Date}}"
