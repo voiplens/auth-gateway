@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1](https://github.com/voiplens/auth-gateway/compare/mimir-gateway-v1.5.0...mimir-gateway-v1.5.1) (2024-05-22)
+
+
+### Bug Fixes
+
+* Change chart email address  ([#4](https://github.com/voiplens/auth-gateway/issues/4)) ([4626407](https://github.com/voiplens/auth-gateway/commit/4626407362d73dc86ccef5dd3e98f57da9a63b2b))
+
 ## [1.5.0](https://github.com/celest-io/auth-gateway/compare/mimir-gateway-0.1.12...mimir-gateway-v1.5.0) (2023-01-10)
 
 
