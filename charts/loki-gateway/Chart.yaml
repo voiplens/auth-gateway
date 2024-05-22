@@ -3,7 +3,7 @@ name: loki-gateway
 home: https://github.com/voiplens/auth-gateway
 description: A Helm chart for loki-gateway
 type: application
-version: 1.5.0
+version: 1.5.1
 appVersion: v1.3.0
 maintainers:
   - name: yvigara
