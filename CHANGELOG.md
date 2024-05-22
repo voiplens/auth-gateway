@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.5.1](https://github.com/voiplens/auth-gateway/compare/v1.5.0...v1.5.1) (2024-05-22)
+
+
+### Bug Fixes
+
+* Release-please action configuration ([a9cd38e](https://github.com/voiplens/auth-gateway/commit/a9cd38e738312eed6e368b35be5ad63bccf88dc6))
+* Release-please action configuration ([#40](https://github.com/voiplens/auth-gateway/issues/40)) ([db9e6a3](https://github.com/voiplens/auth-gateway/commit/db9e6a37dedd15971515f141b2663991a65cc3be))
+* Renovate configuration ([c9405a1](https://github.com/voiplens/auth-gateway/commit/c9405a1dd24949f64f63e56d40ab4b61b01a32c4))
+* Renovate configuration ([#39](https://github.com/voiplens/auth-gateway/issues/39)) ([4f1dba5](https://github.com/voiplens/auth-gateway/commit/4f1dba54a40643dfbd6d1e2f44d1c0d8a950afe6))
+
 ## [1.5.0](https://github.com/celest-io/auth-gateway/compare/v1.4.0...v1.5.0) (2023-01-09)
 
 
