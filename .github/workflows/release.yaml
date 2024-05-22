@@ -125,5 +125,5 @@ jobs:
               break
             fi
             helm push "${pkg}" oci://${{ env.REGISTRY }}/${{ github.repository_owner }}/charts > .digest 2>&1
-            cosign sign $(cat .digest | awk -F "[, ]+" '/Pushed/{print $NF}')
+            cosign sign $(cat .digest | awk -F "[, ]+" '/Pushed/{print $NF}') --yes
           done
