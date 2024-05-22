@@ -11,16 +11,19 @@
   "timezone": "Europe/London",
   "semanticCommits": "enabled",
   "dependencyDashboardTitle": "Renovate Dashboard 🤖",
-  "suppressNotifications": ["prIgnoreNotification"],
+  "suppressNotifications": [
+    "prIgnoreNotification"
+  ],
   "commitBodyTable": true,
   "rebaseWhen": "conflicted",
-  "postUpdateOptions": ["gomodTidy", "gomodNoMassage"],
+  "postUpdateOptions": [
+    "gomodTidy",
+    "gomodMassage"
+  ],
   "commitMessagePrefix": "chore(all): ",
   "commitMessageAction": "update",
   "groupName": "all",
-  "force": {
-    "constraints": {
-      "go": "1.19"
-    }
+  "constraints": {
+    "go": "1.22"
   }
 }
