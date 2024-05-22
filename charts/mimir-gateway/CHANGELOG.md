@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.2](https://github.com/voiplens/auth-gateway/compare/mimir-gateway-v1.5.1...mimir-gateway-v1.5.2) (2024-05-22)
+
+
+### Bug Fixes
+
+* Helm chart signing step ([#8](https://github.com/voiplens/auth-gateway/issues/8)) ([89c2249](https://github.com/voiplens/auth-gateway/commit/89c22495bdeac12f4cb5753cbd44b359ef67c237))
+
 ## [1.5.1](https://github.com/voiplens/auth-gateway/compare/mimir-gateway-v1.5.0...mimir-gateway-v1.5.1) (2024-05-22)
 
 
