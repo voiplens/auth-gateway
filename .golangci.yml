@@ -4,7 +4,7 @@
 # options for analysis running
 run:
   # define go version
-  go: "1.19"
+  go: "1.22"
 
   # default concurrency is a available CPU number
   #concurrency: 16
@@ -25,7 +25,9 @@ run:
 # output configuration options
 output:
   # colored-line-number|line-number|json|tab|checkstyle, default is "colored-line-number"
-  format: colored-line-number
+  formats:
+    - format: colored-line-number
+      path: stdout
 
   # print lines of code with issue, default is true
   print-issued-lines: true
@@ -35,7 +37,7 @@ output:
 
 linters-settings:
   goimports:
-    local-prefixes: github.com/voiplens/mimir-gateway
+    local-prefixes: github.com/voiplens/auth-gateway
 
   errorlint:
     # Check for plain error comparisons.
