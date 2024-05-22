@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.4](https://github.com/voiplens/auth-gateway/compare/v1.5.3...v1.5.4) (2024-05-22)
+
+
+### Bug Fixes
+
+* Change chart email address  ([#4](https://github.com/voiplens/auth-gateway/issues/4)) ([4626407](https://github.com/voiplens/auth-gateway/commit/4626407362d73dc86ccef5dd3e98f57da9a63b2b))
+
 ## [1.5.3](https://github.com/voiplens/auth-gateway/compare/v1.5.2...v1.5.3) (2024-05-22)
 
 
