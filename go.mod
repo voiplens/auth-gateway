@@ -7,7 +7,7 @@ toolchain go1.22.3
 require (
 	github.com/MicahParks/keyfunc v1.9.0
 	github.com/go-kit/log v0.2.1
-	github.com/golang-jwt/jwt/v4 v4.5.0
+	github.com/golang-jwt/jwt/v4 v4.5.2
 	github.com/grafana/dskit v0.0.0-20221110081137-a98d49d36fce
 	github.com/opentracing-contrib/go-stdlib v1.0.0
 	github.com/opentracing/opentracing-go v1.2.0
